@@ -1,0 +1,19 @@
+##Feign请求/响应压缩
+##Feign 请求启用请求或响应 GZIP 压缩
+##Feign 请求压缩为您提供类似于您为 Web 服务器设置的设置
+feign:
+  compression:
+    request:
+      enabled: true
+      mime-types:
+        - text/xml
+        - application/xml
+        - application/json
+      min-request-size: 2048
+    response:
+      enabled: true
+  okhttp:
+    enabled: true
+###在高版本的feign中 支持feign.Request.Options的动态刷新和OAuth2的支持
+
+
