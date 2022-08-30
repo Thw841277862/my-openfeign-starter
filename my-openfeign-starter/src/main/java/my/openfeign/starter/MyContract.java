@@ -6,9 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 自定义feign接口是否启用日志打印 开关接口
+ * 自定义feign Contract增加注解
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FeignExcludeLog {
+public @interface MyContract {
+    String value() default "token";
 }

@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 
 /**
  * 自定义feign的自动配置类
@@ -38,34 +39,14 @@ public class MyOpenFeignAutoConfiguration {
     @Autowired(required = false)
     private FeignDecoderCustomize customize;
 
-    @Bean
-    public Contract contract() {
-        return new Contract.Default();
-    }
-
-
-
-
-
 
     /**
-     * 查询定义
+     * 查询定义  这个功能用的很少基本不考虑
      *
      * @return
      */
 //    @Bean
 //    public QueryMapEncoder queryMapEncoder() {
-//        return null;
-//    }
-
-
-    /**
-     * 调用处理工程程序
-     *
-     * @return
-     */
-//    @Bean
-//    public InvocationHandlerFactory invocationHandlerFactory() {
 //        return null;
 //    }
 
@@ -117,14 +98,13 @@ public class MyOpenFeignAutoConfiguration {
 
     /**
      * 自定义feign调用日志输出
+     *
      * @return
      */
     @Bean
     public Logger logger() {
         return new MyLogConfiguration();
     }
-
-
 
 
     /**
@@ -151,6 +131,11 @@ public class MyOpenFeignAutoConfiguration {
         //方式二：自定义符合自己业务的解码器
         ResponseEntityDecoder responseEntityDecoder = new ResponseEntityDecoder(new SpringDecoder(messageConverters));
         return (Response response, Type type) -> {
+            //获取header是否存在 token标识
+            Collection<String> tokenColl = response.request().headers().get("token");
+            if (null != tokenColl) {
+                //做自定义任务
+            }
             //非包装的类
             if (customize == null) {
                 return responseEntityDecoder.decode(response, Type.class);
@@ -173,5 +158,16 @@ public class MyOpenFeignAutoConfiguration {
         return new ErrorDecoder.Default();
     }
 
+    /**
+     * 自定义扩展feign接口注解功能的支持，openFeign只所以能够支持springMvc的相关注解正是因为扩展了这个接口实现了“SpringMvcContract”
+     * 那么我们可以根据这个接口干做什么？ 我们也可以通过自己定义注解来实现相关的业务操作如：feign接口数据是否需要特需处理如：解密处理、校验处理。
+     * 配合Decoder器使用
+     *
+     * @return Contract
+     */
+    @Bean
+    public Contract contract() {
+        return new FeignContract();
+    }
 
 }
